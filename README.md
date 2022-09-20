@@ -1,0 +1,1 @@
+A very simple, and educational only, demonstration of how to construct a simple DNS query in wire-format to be used in a manual DNS over HTTPS request for example.
