@@ -4,8 +4,8 @@ import sys
 
 from base64 import urlsafe_b64encode
 
-#	 The DNS HEADER
-# 	 Reference: https://www.rfc-editor.org/rfc/rfc1035
+#    The DNS HEADER
+#    Reference: https://www.rfc-editor.org/rfc/rfc1035
 # 
 #     0  1  2  3  4  5  6  7  8  9  0  1  2  3  4  5
 #    +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
@@ -23,47 +23,47 @@ from base64 import urlsafe_b64encode
 #    +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
 
 def labeled_domain(domain: str):
-	""" Construct a labled domain byte-sequence as per section 4.1.2 in RFC1035.
+    """ Construct a labled domain byte-sequence as per section 4.1.2 in RFC1035.
 
-		This means each part of the FQDN will have it's length prepended to the part.
-		www.cstromblad.com would become: 3www10cstromblad3com (but in hex)."""
+        This means each part of the FQDN will have it's length prepended to the part.
+        www.cstromblad.com would become: 3www10cstromblad3com (but in hex)."""
 
-	ds = domain.split(".")
+    ds = domain.split(".")
 
-	domain_construct = b""
-	for part in ds:
-		domain_construct += struct.pack(f">B{len(part)}s", len(part), part.encode())
+    domain_construct = b""
+    for part in ds:
+        domain_construct += struct.pack(f">B{len(part)}s", len(part), part.encode())
 
-	return domain_construct + struct.pack(">B", 0x0) # Zero length octet for the null label of the root
+    return domain_construct + struct.pack(">B", 0x0) # Zero length octet for the null label of the root
 
 def construct_query(domain: str):
-	""" Build and return very simple DNS-query packet in wire-format for <domain>. 
+    """ Build and return very simple DNS-query packet in wire-format for <domain>. 
 
-		This is not a useful function, it's for educational purposes only."""
+        This is not a useful function, it's for educational purposes only."""
 
-	flags = 0x100 # RD-bit set
+    flags = 0x100 # RD-bit set
 
-	id_ = random.randint(1, 65535)
-	qdcount = 0x1 
-	ancount = 0x0
-	nscount = 0x0
-	arcount = 0x0
+    id_ = random.randint(1, 65535)
+    qdcount = 0x1 
+    ancount = 0x0
+    nscount = 0x0
+    arcount = 0x0
 
-	preamble = struct.pack(">HHHHHH", id_, flags, qdcount, ancount, nscount, arcount)
-	labeled_domain = labeled_domain(domain)
-	postamble = struct.pack(">HH", 0x1, 0x1)
+    preamble = struct.pack(">HHHHHH", id_, flags, qdcount, ancount, nscount, arcount)
+    labeled_domain = labeled_domain(domain)
+    postamble = struct.pack(">HH", 0x1, 0x1)
 
-	return preamble + labeled_domain + postamble
+    return preamble + labeled_domain + postamble
 
 def do_main(domain: str):
 
-	q = construct_query(domain)
+    q = construct_query(domain)
 
-	for c in q:
-		print(f'{c:02x} ', end = '')
+    for c in q:
+        print(f'{c:02x} ', end = '')
 
-	print(urlsafe_b64encode(q).rstrip(b'='))
+    print(urlsafe_b64encode(q).rstrip(b'='))
 
 if __name__ == "__main__":
 
-	do_main(sys.argv[1])
+    do_main(sys.argv[1])
