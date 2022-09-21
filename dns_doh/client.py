@@ -22,7 +22,7 @@ from base64 import urlsafe_b64encode
 #    |                    ARCOUNT                    |
 #    +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
 
-def labled_domain(domain: str):
+def labeled_domain(domain: str):
 	""" Construct a labled domain byte-sequence as per section 4.1.2 in RFC1035.
 
 		This means each part of the FQDN will have it's length prepended to the part.
@@ -50,7 +50,7 @@ def construct_query(domain: str):
 	arcount = 0x0
 
 	preamble = struct.pack(">HHHHHH", id_, flags, qdcount, ancount, nscount, arcount)
-	labeled_domain = labled_domain(domain)
+	labeled_domain = labeled_domain(domain)
 	postamble = struct.pack(">HH", 0x1, 0x1)
 
 	return preamble + labeled_domain + postamble
