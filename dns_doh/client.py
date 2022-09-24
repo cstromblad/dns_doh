@@ -1,4 +1,5 @@
 import random
+import requests
 import struct
 import sys
 
@@ -21,6 +22,8 @@ from base64 import urlsafe_b64encode
 #    +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
 #    |                    ARCOUNT                    |
 #    +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+
+OPENDNS_URL = 'https://doh.opendns.com'
 
 def labeled_domain(domain: str):
     """ Construct a labled domain byte-sequence as per section 4.1.2 in RFC1035.
@@ -50,10 +53,10 @@ def construct_query(domain: str):
     arcount = 0x0
 
     preamble = struct.pack(">HHHHHH", id_, flags, qdcount, ancount, nscount, arcount)
-    labeled_domain = labeled_domain(domain)
+    ld = labeled_domain(domain)
     postamble = struct.pack(">HH", 0x1, 0x1)
 
-    return preamble + labeled_domain + postamble
+    return preamble + ld + postamble
 
 def do_main(domain: str):
 
@@ -62,7 +65,14 @@ def do_main(domain: str):
     for c in q:
         print(f'{c:02x} ', end = '')
 
-    print(urlsafe_b64encode(q).rstrip(b'='))
+    doh_request = urlsafe_b64encode(q).rstrip(b'=')
+    print(doh_request)
+
+    # Send DNS-request to DoH-enabled server.
+    headers= {'Content-type': 'application/dns-message'}
+    response = requests.get(f"{OPENDNS_URL}/dns-query?dns={doh_request.decode()}", headers=headers)
+
+    print(response.content)
 
 if __name__ == "__main__":
 

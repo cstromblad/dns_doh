@@ -6,6 +6,7 @@ authors = ["Christoffer Strömblad <christoffer@cstromblad.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.9"
+requests = "^2.28.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
